@@ -1,6 +1,7 @@
 import { describe, beforeEach, it, expect } from '@jest/globals';
+import { VoInvalidValue } from '@shared/exception/vo-invalid-value.exception';
+import { randomUUID } from 'node:crypto';
 import { Product } from './product.entity';
-import { randomUUID } from 'crypto';
 
 describe('Product Entity', () => {
   let product: Product;
@@ -36,6 +37,65 @@ describe('Product Entity', () => {
       product.price = price;
 
       expect(product.price).toBe(price);
+    });
+  });
+
+  describe('Factory Method', () => {
+    it('should create a product entity instance', () => {
+      const data = {
+        name: 'Apple',
+        description: 'Green Apple',
+        price: 2.3,
+      };
+
+      const product = Product.create(data);
+
+      expect(product).toBeDefined();
+      expect(product).toBeInstanceOf(Product);
+      expect(product).toMatchObject(data);
+      expect(product.id).toBeDefined();
+      expect(product.createdAt).toBeDefined();
+    });
+
+    it('should create a product entity instance with all attrs', () => {
+      const currentDate = new Date();
+
+      const data = {
+        id: randomUUID().toString(),
+        name: 'Apple',
+        description: 'Green Apple',
+        price: 2.3,
+        createdAt: currentDate,
+        updatedAt: currentDate,
+        deletedAt: currentDate,
+      };
+
+      const product = Product.create(data);
+
+      expect(product).toBeDefined();
+      expect(product).toBeInstanceOf(Product);
+      expect(product).toMatchObject(data);
+      expect(product.id).toBeDefined();
+      expect(product.createdAt).toBeDefined();
+    });
+
+    it('should return a exception if invalid value for price attr', () => {
+      const price = Number('abc123');
+
+      const data = {
+        name: 'Apple',
+        description: 'Green Apple',
+        price,
+      };
+
+      try {
+        Product.create(data);
+      } catch (error) {
+        expect(error).toBeInstanceOf(VoInvalidValue);
+        expect((error as VoInvalidValue).message).toBe(
+          'Invalid value for PriceValueObject',
+        );
+      }
     });
   });
 });
