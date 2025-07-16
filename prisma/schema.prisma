@@ -17,3 +17,12 @@ model Product {
   updatedAt   DateTime? @db.Timestamp()
   deletedAt   DateTime? @db.Timestamp()
 }
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @db.VarChar(80)
+  displayName String    @db.VarChar(150)
+  createdAt   DateTime  @db.Timestamp()
+  updatedAt   DateTime? @db.Timestamp()
+  deletedAt   DateTime? @db.Timestamp()
+}
