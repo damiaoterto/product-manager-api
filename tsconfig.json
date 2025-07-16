@@ -21,7 +21,8 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@shared/*": ["./src/shared/*"],
-      "@domain/*": ["./src/domain/*"]
+      "@domain/*": ["./src/domain/*"],
+      "@infra/*": ["./src/infra/*"]
     }
   }
 }
