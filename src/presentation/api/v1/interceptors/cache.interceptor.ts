@@ -25,55 +25,57 @@ export class CacheInterceptor implements NestInterceptor {
     ctx: ExecutionContext,
     next: CallHandler,
   ): Promise<Observable<any>> {
-    const cacheKey = this.reflector.get<string>(
+    const request = ctx.switchToHttp().getRequest<Request>();
+
+    const rawCacheKey = this.reflector.get<string>(
       CACHE_KEY_METADATA,
       ctx.getHandler(),
     );
 
-    if (!cacheKey) return next.handle();
-
-    const request = ctx.switchToHttp().getRequest<Request>();
     const keysToInvalidate = this.reflector.get<string[]>(
       INVALIDATE_CACHE_METADATA,
       ctx.getHandler(),
     );
 
-    try {
-      const cacheData = await this.redisService.get(cacheKey);
-      if (cacheData) {
-        return of(cacheData);
-      }
-    } catch (error) {
-      if (cacheKey) {
-        this.logger.error(`Error on access redis: ${error}`);
-        return next.handle();
-      }
+    const resolvePlaceholders = (key: string) =>
+      key.replace(/{{(\w+)}}/g, (_, paramName) => request.params[paramName]);
 
-      if (keysToInvalidate.length) {
-        this.logger.log(
-          `Invaliding cache keys: ${keysToInvalidate.join(', ')}`,
-        );
+    const resolvedCacheKey = rawCacheKey
+      ? resolvePlaceholders(rawCacheKey)
+      : undefined;
 
-        const resolvedKeys = keysToInvalidate.map((key) =>
-          key.replace(
-            /{{(\w+)}}/g,
-            (_, paramName) => request.params[paramName],
-          ),
-        );
-
-        for (const key of resolvedKeys) {
-          this.logger.log(`deleting key: ${key}`);
-          await this.redisService.del(key);
+    if (resolvedCacheKey) {
+      try {
+        const cachedData = await this.redisService.get(resolvedCacheKey);
+        if (cachedData) {
+          this.logger.log(`Hit to dynamic key: ${resolvedCacheKey}`);
+          return of(cachedData);
         }
+      } catch (error) {
+        this.logger.error('Fail on access Redis:', error);
       }
     }
 
-    this.logger.log(`Cache data not found for key ${cacheKey}`);
     return next.handle().pipe(
       tap((data) => {
-        this.redisService.set(cacheKey, data).catch((error) => {
-          this.logger.error(`Error on set cache key ${cacheKey}: ${error}`);
-        });
+        if (resolvedCacheKey) {
+          this.logger.log(`Set cache key ${resolvedCacheKey}`);
+          this.redisService
+            .set(resolvedCacheKey, data)
+            .catch((error) => this.logger.error(error));
+        }
+
+        if (keysToInvalidate?.length) {
+          const resolvedKeysToInvalidate =
+            keysToInvalidate.map(resolvePlaceholders);
+
+          for (const key of resolvedKeysToInvalidate) {
+            this.logger.log(`invalidating key: ${key}`);
+            this.redisService
+              .del(key)
+              .catch((error) => this.logger.error(error));
+          }
+        }
       }),
     );
   }
