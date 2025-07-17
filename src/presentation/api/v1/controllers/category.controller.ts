@@ -1,9 +1,20 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { CreateCategoryDTO } from '@application/category/dto/create-category.dto';
 import { CreateCategoryUseCase } from '@application/category/usecases/create-category.usecase';
 import { Category } from '@domain/categories/entities/category.entity';
 import { FindCategoryById } from '@application/category/usecases/find-category-by-id.usecase';
 import { GetAllCategoriesUseCase } from '@application/category/usecases/get-all-categories.usecase';
+import { UpdateCategoryDTO } from '@application/category/dto/update-category.dto';
+import { UpdateCategoryUseCase } from '@application/category/usecases/update-category.usecase';
 
 @Controller({ path: 'categories', version: '1' })
 export class CategoryController {
@@ -11,6 +22,7 @@ export class CategoryController {
     private readonly createCategoryUseCase: CreateCategoryUseCase,
     private readonly findCategoryById: FindCategoryById,
     private readonly getAllCategoryUseCase: GetAllCategoriesUseCase,
+    private readonly updateCategoryUseCase: UpdateCategoryUseCase,
   ) {}
 
   @Post()
@@ -26,5 +38,14 @@ export class CategoryController {
   @Get(':id')
   async findCategory(@Param('id') id: string): Promise<Category> {
     return await this.findCategoryById.execute(id);
+  }
+
+  @Patch(':id')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async updateCategory(
+    @Param('id') id: string,
+    @Body() data: UpdateCategoryDTO,
+  ) {
+    return await this.updateCategoryUseCase.execute({ id, ...data });
   }
 }

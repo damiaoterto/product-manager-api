@@ -4,10 +4,11 @@ import { CategoryController } from './category.controller';
 import { CreateCategoryUseCase } from '@application/category/usecases/create-category.usecase';
 import { FindCategoryById } from '@application/category/usecases/find-category-by-id.usecase';
 import { GetAllCategoriesUseCase } from '@application/category/usecases/get-all-categories.usecase';
+import { UpdateCategoryUseCase } from '@application/category/usecases/update-category.usecase';
 import { CreateCategoryDTO } from '@application/category/dto/create-category.dto';
+import { UpdateCategoryDTO } from '@application/category/dto/update-category.dto';
 import { Category } from '@domain/categories/entities/category.entity';
 
-// 1. Mock de todos os UseCases que são dependências do controller
 const mockCreateCategoryUseCase = {
   execute: jest.fn(),
 };
@@ -20,11 +21,16 @@ const mockGetAllCategoriesUseCase = {
   execute: jest.fn(),
 };
 
+const mockUpdateCategoryUseCase = {
+  execute: jest.fn(),
+};
+
 describe('CategoryController', () => {
   let controller: CategoryController;
   let createUseCase: CreateCategoryUseCase;
   let findByIdUseCase: FindCategoryById;
   let getAllUseCase: GetAllCategoriesUseCase;
+  let updateUseCase: UpdateCategoryUseCase;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -42,6 +48,10 @@ describe('CategoryController', () => {
           provide: GetAllCategoriesUseCase,
           useValue: mockGetAllCategoriesUseCase,
         },
+        {
+          provide: UpdateCategoryUseCase,
+          useValue: mockUpdateCategoryUseCase,
+        },
       ],
     }).compile();
 
@@ -51,6 +61,7 @@ describe('CategoryController', () => {
     getAllUseCase = module.get<GetAllCategoriesUseCase>(
       GetAllCategoriesUseCase,
     );
+    updateUseCase = module.get<UpdateCategoryUseCase>(UpdateCategoryUseCase);
 
     jest.clearAllMocks();
   });
@@ -111,6 +122,40 @@ describe('CategoryController', () => {
         expectedError,
       );
       expect(findByIdUseCase.execute).toHaveBeenCalledWith(categoryId);
+    });
+  });
+
+  describe('updateCategory', () => {
+    it('should call the update use case with the correct data', async () => {
+      const categoryId = 'uuid-1';
+      const updateDto: UpdateCategoryDTO = { name: 'Updated Name' };
+      mockUpdateCategoryUseCase.execute.mockResolvedValue(undefined);
+
+      await controller.updateCategory(categoryId, updateDto);
+
+      expect(updateUseCase.execute).toHaveBeenCalledWith({
+        id: categoryId,
+        ...updateDto,
+      });
+    });
+
+    it('should propagate HttpException when category to update is not found', async () => {
+      const categoryId = 'not-found-uuid';
+      const updateDto: UpdateCategoryDTO = { name: 'Updated Name' };
+      const expectedError = new HttpException(
+        'Category not exists',
+        HttpStatus.NOT_FOUND,
+      );
+      mockUpdateCategoryUseCase.execute.mockRejectedValue(expectedError);
+
+      await expect(
+        controller.updateCategory(categoryId, updateDto),
+      ).rejects.toThrow(expectedError);
+
+      expect(updateUseCase.execute).toHaveBeenCalledWith({
+        id: categoryId,
+        ...updateDto,
+      });
     });
   });
 });
