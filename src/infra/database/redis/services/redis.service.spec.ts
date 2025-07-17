@@ -22,6 +22,7 @@ describe('RedisService', () => {
     destroy: jest.fn(),
     get: jest.fn(),
     set: jest.fn(),
+    del: jest.fn(), // Adicionado o mock para o método del
   };
 
   const loggerLogSpy = jest
@@ -127,6 +128,16 @@ describe('RedisService', () => {
       await service.set(key, value);
 
       expect(redisClient.set).toHaveBeenCalledWith(key, stringifiedValue);
+    });
+  });
+
+  describe('del', () => {
+    it('should call the del method on the redis client with the correct key', async () => {
+      const key = 'key-to-delete';
+      await service.del(key);
+
+      expect(redisClient.del).toHaveBeenCalledWith(key);
+      expect(redisClient.del).toHaveBeenCalledTimes(1);
     });
   });
 });

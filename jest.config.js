@@ -19,6 +19,8 @@ const config = {
     'interfaces',
     'jestGlobalMocks.ts',
     '\\.module\\.ts',
+    '\\.decorator\\.ts',
+    '\\.interceptor\\.ts',
     'in-memory\\.repository\\.ts',
     '<rootDir>/src/app/main.ts',
     '\\.mock\\.ts',
