@@ -60,16 +60,16 @@ export class PrismaProductRepository implements ProductRepository {
 
   async update(
     id: string,
-    data: Omit<Partial<Product>, 'createdAt' | 'updatedAt'>,
+    data: Omit<Partial<Product>, 'categories' | 'createdAt' | 'updatedAt'>,
   ): Promise<void> {
-    const existsCategory = await this.findOneById(id);
+    const existsProduct = await this.findOneById(id);
 
-    if (!existsCategory) {
+    if (!existsProduct) {
       throw new Error('Product not found');
     }
 
-    await this.prismaClient.category.update({
-      where: { id: existsCategory.id },
+    await this.prismaClient.product.update({
+      where: { id: existsProduct.id },
       data: { ...data },
     });
   }
@@ -81,7 +81,7 @@ export class PrismaProductRepository implements ProductRepository {
       throw new Error('Product not found');
     }
 
-    await this.prismaClient.category.delete({
+    await this.prismaClient.product.delete({
       where: { id: existsProduct.id },
     });
   }

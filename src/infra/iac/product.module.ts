@@ -4,6 +4,7 @@ import { GetProductByIdUseCase } from '@application/product/usecase/get-product-
 import { GetAllProductsUseCase } from '@application/product/usecase/get-all-products.usecase';
 import { UpdateProductUseCase } from '@application/product/usecase/update-product.usecase';
 import { DeleteProductUseCase } from '@application/product/usecase/delete-product.usecase';
+import { ProductController } from '@presentation/api/v1/controllers/product.controller';
 
 @Module({
   providers: [
@@ -13,5 +14,6 @@ import { DeleteProductUseCase } from '@application/product/usecase/delete-produc
     UpdateProductUseCase,
     DeleteProductUseCase,
   ],
+  controllers: [ProductController],
 })
 export class ProductModule {}

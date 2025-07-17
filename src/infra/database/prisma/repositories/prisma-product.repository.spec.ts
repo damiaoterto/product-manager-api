@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaClient } from '@generated/prisma';
-import { PrismaProductRepository } from './prisma-product.repository';
 import { Product } from '@domain/products/entities/product.entity';
 import { Category } from '@domain/categories/entities/category.entity';
 import { randomUUID } from 'node:crypto';
+import { PrismaProductRepository } from './prisma-product.repository';
 
 jest.mock('@domain/products/entities/product.entity');
 jest.mock('@domain/categories/entities/category.entity');
@@ -62,7 +62,6 @@ describe('PrismaProductRepository', () => {
 
   beforeEach(async () => {
     (Category.create as jest.Mock).mockReturnValue(mockCategoryEntity);
-
     (Product.create as jest.Mock).mockReturnValue(mockProductEntity);
 
     const module: TestingModule = await Test.createTestingModule({
@@ -88,19 +87,9 @@ describe('PrismaProductRepository', () => {
   describe('findAll', () => {
     it('should return an array of products including categories', async () => {
       mockPrismaClient.product.findMany.mockResolvedValue([mockRawProduct]);
-
       const result = await repository.findAll();
-
       expect(prismaClient.product.findMany).toHaveBeenCalledWith({
         include: { categories: true },
-      });
-      expect(Category.create).toHaveBeenCalledWith(
-        mockRawProduct.categories[0],
-      );
-      expect(Product.create).toHaveBeenCalledWith({
-        ...mockRawProduct,
-        price: 4999.99,
-        categories: [mockCategoryEntity],
       });
       expect(result).toEqual([mockProductEntity]);
     });
@@ -109,20 +98,10 @@ describe('PrismaProductRepository', () => {
   describe('findOneById', () => {
     it('should return a product with categories if found', async () => {
       mockPrismaClient.product.findUnique.mockResolvedValue(mockRawProduct);
-
       const result = await repository.findOneById('product-uuid-1');
-
       expect(prismaClient.product.findUnique).toHaveBeenCalledWith({
         where: { id: 'product-uuid-1' },
         include: { categories: true },
-      });
-      expect(Category.create).toHaveBeenCalledWith(
-        mockRawProduct.categories[0],
-      );
-      expect(Product.create).toHaveBeenCalledWith({
-        ...mockRawProduct,
-        price: 4999.99,
-        categories: [mockCategoryEntity],
       });
       expect(result).toEqual(mockProductEntity);
     });
@@ -137,7 +116,6 @@ describe('PrismaProductRepository', () => {
   describe('createNew', () => {
     it('should create a new product and connect its categories', async () => {
       await repository.createNew(mockProductEntity);
-
       expect(prismaClient.product.create).toHaveBeenCalledWith({
         data: {
           id: mockProductEntity.id,
@@ -160,11 +138,17 @@ describe('PrismaProductRepository', () => {
       ).rejects.toThrow('Product not found');
     });
 
-    it('should attempt to update a product if it exists', async () => {
+    it('should update a product if it exists', async () => {
       mockPrismaClient.product.findUnique.mockResolvedValue(mockRawProduct);
       const updateData = { name: 'Laptop Pro v2' };
       await repository.update('product-uuid-1', updateData);
-      expect(prismaClient.category.update).toHaveBeenCalled();
+
+      expect(prismaClient.product.update).toHaveBeenCalledWith({
+        where: { id: mockProductEntity.id },
+        data: updateData,
+      });
+
+      expect(prismaClient.category.update).not.toHaveBeenCalled();
     });
   });
 
@@ -176,10 +160,15 @@ describe('PrismaProductRepository', () => {
       );
     });
 
-    it('should attempt to delete a product if it exists', async () => {
+    it('should delete a product if it exists', async () => {
       mockPrismaClient.product.findUnique.mockResolvedValue(mockRawProduct);
       await repository.delete('product-uuid-1');
-      expect(prismaClient.category.delete).toHaveBeenCalled();
+
+      expect(prismaClient.product.delete).toHaveBeenCalledWith({
+        where: { id: mockProductEntity.id },
+      });
+
+      expect(prismaClient.category.delete).not.toHaveBeenCalled();
     });
   });
 });

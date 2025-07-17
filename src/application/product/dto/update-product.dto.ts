@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
   IsDefined,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -30,7 +29,7 @@ export class UpdateProductDTO {
   price?: number;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsDefined()
   @IsArray()
   categories?: string[];
