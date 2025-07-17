@@ -3,20 +3,20 @@ networks:
     driver: bridge
 
 services:
-  # api:
-  #   build:
-  #     context: .
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - migrations
-  #     - database
-  #     - cache
-  #   environment:
-  #     - DATABASE_URL=postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?schema=public
-  #     - REDIS_URI=redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}
-  #   networks:
-  #     - product-manager
+  api:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - migrations
+      - database
+      - cache
+    environment:
+      - DATABASE_URL=postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?schema=public
+      - REDIS_URI=redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}
+    networks:
+      - product-manager
 
   migrations:
     build:
