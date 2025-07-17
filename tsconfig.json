@@ -10,7 +10,6 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "allowJs": true,
     "incremental": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
@@ -22,7 +21,10 @@
     "paths": {
       "@shared/*": ["./src/shared/*"],
       "@domain/*": ["./src/domain/*"],
-      "@infra/*": ["./src/infra/*"]
+      "@infra/*": ["./src/infra/*"],
+      "@generated/*": ["./generated/*"],
+      "@generated": ["./generated"],
+      "@utils/*": ["./src/utils/*"]
     }
   }
 }
