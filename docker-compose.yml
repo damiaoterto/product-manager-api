@@ -3,6 +3,34 @@ networks:
     driver: bridge
 
 services:
+  api:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - migrations
+      - database
+      - cache
+    environment:
+      - DATABASE_URL=postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?schema=public
+      - REDIS_URI=redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}
+    networks:
+      - product-manager
+
+  migrations:
+    build:
+      context: .
+      target: builder
+    restart: on-failure
+    command: npx prisma migrate dev
+    depends_on:
+      - database
+    environment:
+      - DATABASE_URL=postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?schema=public
+    networks:
+      - product-manager
+
   database:
     image: postgres:17-alpine
     ports:
