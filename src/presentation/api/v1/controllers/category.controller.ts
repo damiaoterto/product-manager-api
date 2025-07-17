@@ -53,6 +53,7 @@ export class CategoryController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.ACCEPTED)
   async DeleteCategory(@Param('id') id: string) {
     return await this.deleteCategoryUseCase.execute(id);
   }
