@@ -45,7 +45,7 @@ export class ProductController {
   }
 
   @Post()
-  @InvalidateCache('product:{{id}}, all_products')
+  @InvalidateCache('all_products')
   async createNewProduct(@Body() data: CreateProductDTO) {
     return await this.createProductUseCase.execute(data);
   }
