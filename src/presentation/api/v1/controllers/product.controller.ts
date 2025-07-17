@@ -52,14 +52,14 @@ export class ProductController {
 
   @Patch(':id')
   @HttpCode(HttpStatus.ACCEPTED)
-  @InvalidateCache('product:{{id}}, all_products')
+  @InvalidateCache('product:{{id}}', 'all_products')
   async updateProduct(@Param('id') id: string, @Body() data: UpdateProductDTO) {
     return this.updateProductUseCase.execute({ id, ...data });
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.ACCEPTED)
-  @InvalidateCache('product:{{id}}, all_products')
+  @InvalidateCache('product:{{id}}', 'all_products')
   async deleteProduct(@Param('id') id: string) {
     return this.deleteProductUseCase.execute(id);
   }
