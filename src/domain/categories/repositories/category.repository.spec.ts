@@ -60,6 +60,20 @@ describe('Category Repository', () => {
     expect(createdProduct).toBe(category);
   });
 
+  it('should be find a category by name', async () => {
+    const category = Category.create(categoryData);
+
+    const spyFindOneByName = jest.spyOn(repository, 'findOneByName');
+    await repository.createNew(category);
+
+    const createdProduct = await repository.findOneByName(category.name);
+
+    expect(spyFindOneByName).toHaveBeenCalled();
+    expect(spyFindOneByName).toHaveBeenCalledTimes(1);
+    expect(createdProduct).toBeDefined();
+    expect(createdProduct).toBe(category);
+  });
+
   it('should be update a category register', async () => {
     const name = 'electro';
     const updateData = {

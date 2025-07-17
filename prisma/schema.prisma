@@ -20,7 +20,7 @@ model Product {
 
 model Category {
   id          String    @id @default(uuid())
-  name        String    @db.VarChar(80)
+  name        String    @unique @db.VarChar(80)
   displayName String    @db.VarChar(150)
   createdAt   DateTime  @default(now()) @db.Timestamp()
   updatedAt   DateTime? @db.Timestamp()

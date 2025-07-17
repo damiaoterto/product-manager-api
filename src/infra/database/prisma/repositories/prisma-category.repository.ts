@@ -22,6 +22,16 @@ export class PrismaCategoryRepository implements CategoryRepository {
     return Category.create(category);
   }
 
+  async findOneByName(name: string): Promise<Category | undefined> {
+    const category = await this.prismaClient.category.findUnique({
+      where: { name },
+    });
+
+    if (!category) return undefined;
+
+    return Category.create(category);
+  }
+
   async createNew(data: Category): Promise<void> {
     await this.prismaClient.category.create({
       data: {

@@ -1,7 +1,7 @@
-import { BaseRepository } from '@shared/repositories/base-repository.repository';
 import { Category } from '../entities/category.entity';
+import { CategoryRepository } from './category.repository';
 
-export class InMemoryCategoryRepository implements BaseRepository<Category> {
+export class InMemoryCategoryRepository implements CategoryRepository {
   private categories: Category[] = [];
 
   async findAll(): Promise<Category[]> {
@@ -10,6 +10,10 @@ export class InMemoryCategoryRepository implements BaseRepository<Category> {
 
   async findOneById(id: string): Promise<Category | undefined> {
     return this.categories.find((category) => category.id === id);
+  }
+
+  async findOneByName(name: string): Promise<Category | undefined> {
+    return this.categories.find((category) => category.name === name);
   }
 
   async createNew(data: Category): Promise<void> {
