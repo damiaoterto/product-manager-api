@@ -3,9 +3,11 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { CategoryController } from './category.controller';
 import { CreateCategoryUseCase } from '@application/category/usecases/create-category.usecase';
 import { FindCategoryById } from '@application/category/usecases/find-category-by-id.usecase';
+import { GetAllCategoriesUseCase } from '@application/category/usecases/get-all-categories.usecase';
 import { CreateCategoryDTO } from '@application/category/dto/create-category.dto';
 import { Category } from '@domain/categories/entities/category.entity';
 
+// 1. Mock de todos os UseCases que são dependências do controller
 const mockCreateCategoryUseCase = {
   execute: jest.fn(),
 };
@@ -14,10 +16,15 @@ const mockFindCategoryById = {
   execute: jest.fn(),
 };
 
+const mockGetAllCategoriesUseCase = {
+  execute: jest.fn(),
+};
+
 describe('CategoryController', () => {
   let controller: CategoryController;
   let createUseCase: CreateCategoryUseCase;
-  let findUseCase: FindCategoryById;
+  let findByIdUseCase: FindCategoryById;
+  let getAllUseCase: GetAllCategoriesUseCase;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -31,12 +38,19 @@ describe('CategoryController', () => {
           provide: FindCategoryById,
           useValue: mockFindCategoryById,
         },
+        {
+          provide: GetAllCategoriesUseCase,
+          useValue: mockGetAllCategoriesUseCase,
+        },
       ],
     }).compile();
 
     controller = module.get<CategoryController>(CategoryController);
     createUseCase = module.get<CreateCategoryUseCase>(CreateCategoryUseCase);
-    findUseCase = module.get<FindCategoryById>(FindCategoryById);
+    findByIdUseCase = module.get<FindCategoryById>(FindCategoryById);
+    getAllUseCase = module.get<GetAllCategoriesUseCase>(
+      GetAllCategoriesUseCase,
+    );
 
     jest.clearAllMocks();
   });
@@ -61,6 +75,18 @@ describe('CategoryController', () => {
     });
   });
 
+  describe('getAllCategories', () => {
+    it('should call the get all use case and return an array of categories', async () => {
+      const expectedResult = [{ id: 'uuid-1' }, { id: 'uuid-2' }] as Category[];
+      mockGetAllCategoriesUseCase.execute.mockResolvedValue(expectedResult);
+
+      const result = await controller.getAllCategories();
+
+      expect(getAllUseCase.execute).toHaveBeenCalledWith(undefined);
+      expect(result).toEqual(expectedResult);
+    });
+  });
+
   describe('findCategory', () => {
     it('should call the find use case and return a category', async () => {
       const categoryId = 'uuid-1';
@@ -69,7 +95,7 @@ describe('CategoryController', () => {
 
       const result = await controller.findCategory(categoryId);
 
-      expect(findUseCase.execute).toHaveBeenCalledWith(categoryId);
+      expect(findByIdUseCase.execute).toHaveBeenCalledWith(categoryId);
       expect(result).toEqual(expectedResult);
     });
 
@@ -84,7 +110,7 @@ describe('CategoryController', () => {
       await expect(controller.findCategory(categoryId)).rejects.toThrow(
         expectedError,
       );
-      expect(findUseCase.execute).toHaveBeenCalledWith(categoryId);
+      expect(findByIdUseCase.execute).toHaveBeenCalledWith(categoryId);
     });
   });
 });
