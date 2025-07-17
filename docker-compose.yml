@@ -1,9 +1,8 @@
 networks:
   product-manager:
-    driver: bridge
 
 services:
-  api:
+  application:
     build:
       context: .
     ports:
