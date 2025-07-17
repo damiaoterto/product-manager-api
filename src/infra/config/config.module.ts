@@ -4,12 +4,13 @@ import {
   ConfigModule as NestConfigModule,
 } from '@nestjs/config';
 import { ConfigService } from './services/config.service';
+import redisConfig from './configs/redis.config';
 
 export class ConfigModule {
   static forRoot(): DynamicModule {
     return {
       module: ConfigModule,
-      imports: [NestConfigModule.forRoot()],
+      imports: [NestConfigModule.forRoot({ load: [redisConfig] })],
       providers: [NestConfigService, ConfigService],
     };
   }

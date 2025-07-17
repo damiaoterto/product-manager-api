@@ -1,5 +1,6 @@
 import { DynamicModule } from '@nestjs/common';
 import { createRedisProvider } from './providers/create-redis.provider';
+import { RedisService } from './services/redis.service';
 
 export class RedisModule {
   static forRoot(): DynamicModule {
@@ -8,7 +9,8 @@ export class RedisModule {
     return {
       global: true,
       module: RedisModule,
-      providers: [redisProvider],
+      providers: [redisProvider, RedisService],
+      exports: [RedisService],
     };
   }
 }
