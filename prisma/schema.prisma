@@ -14,18 +14,16 @@ model Product {
   description String     @db.VarChar(250)
   price       Decimal    @db.Money
   categories  Category[]
-  createdAt   DateTime   @db.Timestamp()
+  createdAt   DateTime   @default(now()) @db.Timestamp()
   updatedAt   DateTime?  @db.Timestamp()
-  deletedAt   DateTime?  @db.Timestamp()
 }
 
 model Category {
   id          String    @id @default(uuid())
   name        String    @db.VarChar(80)
   displayName String    @db.VarChar(150)
-  createdAt   DateTime  @db.Timestamp()
+  createdAt   DateTime  @default(now()) @db.Timestamp()
   updatedAt   DateTime? @db.Timestamp()
-  deletedAt   DateTime? @db.Timestamp()
   Product     Product?  @relation(fields: [productId], references: [id])
   productId   String?
 }
