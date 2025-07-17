@@ -24,6 +24,7 @@
       "@infra/*": ["./src/infra/*"],
       "@generated/*": ["./generated/*"],
       "@generated": ["./generated"],
+      "@presentation/*": ["./presentation/*"],
       "@utils/*": ["./src/utils/*"]
     }
   }
