@@ -16,7 +16,10 @@ export class InMemoryCategoryRepository implements BaseRepository<Category> {
     this.categories.push(data);
   }
 
-  async update(id: string, data: Partial<Category>): Promise<void> {
+  async update(
+    id: string,
+    data: Omit<Partial<Category>, 'createdAt' | 'updatedAt'>,
+  ): Promise<void> {
     const existsCategory = await this.findOneById(id);
 
     if (!existsCategory) {

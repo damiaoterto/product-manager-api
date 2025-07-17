@@ -67,7 +67,6 @@ describe('Product Entity', () => {
         price: 2.3,
         createdAt: currentDate,
         updatedAt: currentDate,
-        deletedAt: currentDate,
       };
 
       const product = Product.create(data);

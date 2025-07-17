@@ -16,7 +16,10 @@ export class InMemoryProductRepository implements ProductRepository {
     this.products.push(data);
   }
 
-  async update(id: string, product: Partial<Product>): Promise<void> {
+  async update(
+    id: string,
+    product: Omit<Partial<Product>, 'createdAt' | 'updatedAt'>,
+  ): Promise<void> {
     const existsProduct = await this.findOneById(id);
 
     if (!existsProduct) {

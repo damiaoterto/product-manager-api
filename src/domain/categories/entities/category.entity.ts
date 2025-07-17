@@ -13,7 +13,6 @@ export class Category extends BaseEntity {
     category.displayName = data.displayName;
     category.createdAt = data.createdAt ?? new Date();
     category.updatedAt = data.updatedAt ?? null;
-    category.deletedAt = data.deletedAt ?? null;
 
     return category;
   }

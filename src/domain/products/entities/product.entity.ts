@@ -16,7 +16,6 @@ export class Product extends BaseEntity {
     product.price = new PriceValueObject(data.price).value;
     product.createdAt = data.createdAt ?? new Date();
     product.updatedAt = data.updatedAt ?? null;
-    product.deletedAt = data.deletedAt ?? null;
 
     return product;
   }

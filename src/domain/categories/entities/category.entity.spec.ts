@@ -53,7 +53,6 @@ describe('Category Entity', () => {
         displayName: 'Electronic',
         createdAt: currentDate,
         updatedAt: currentDate,
-        deletedAt: currentDate,
       };
 
       const category = Category.create(data);
