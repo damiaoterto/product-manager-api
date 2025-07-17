@@ -9,6 +9,7 @@ import { DeleteCategoryUseCase } from '@application/category/usecases/delete-cat
 import { CreateCategoryDTO } from '@application/category/dto/create-category.dto';
 import { UpdateCategoryDTO } from '@application/category/dto/update-category.dto';
 import { Category } from '@domain/categories/entities/category.entity';
+import { CacheInterceptor } from '../interceptors/cache.interceptor';
 
 const mockCreateCategoryUseCase = {
   execute: jest.fn(),
@@ -63,7 +64,13 @@ describe('CategoryController', () => {
           useValue: mockDeleteCategoryUseCase,
         },
       ],
-    }).compile();
+    })
+
+      .overrideInterceptor(CacheInterceptor)
+      .useValue({
+        intercept: jest.fn().mockImplementation((_, next) => next.handle()),
+      })
+      .compile();
 
     controller = module.get<CategoryController>(CategoryController);
     createUseCase = module.get<CreateCategoryUseCase>(CreateCategoryUseCase);
