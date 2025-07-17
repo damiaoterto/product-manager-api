@@ -1,4 +1,4 @@
-import { CreateProduct } from './create-product.dto';
+import { CreateProductDTO } from './create-product.dto';
 
 describe('CreateProductDTO', () => {
   it('should create an instance and assign all properties correctly', () => {
@@ -9,7 +9,7 @@ describe('CreateProductDTO', () => {
       categories: ['electronics', 'computers'],
     };
 
-    const dto = new CreateProduct();
+    const dto = new CreateProductDTO();
     dto.name = productData.name;
     dto.description = productData.description;
     dto.price = productData.price;

@@ -9,7 +9,7 @@ import {
   Min,
 } from 'class-validator';
 
-export class CreateProduct {
+export class CreateProductDTO {
   @ApiProperty()
   @IsNotEmpty()
   @IsDefined()
