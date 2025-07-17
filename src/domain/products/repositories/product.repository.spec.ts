@@ -1,15 +1,27 @@
-import { describe, beforeEach, expect, it } from '@jest/globals';
+import { describe, beforeEach, expect, it, jest } from '@jest/globals';
 import { ProductRepository } from './product.repository';
 import { InMemoryProductRepository } from './in-memory-product.repository';
 import { Product } from '../entities/product.entity';
+import { Category } from '@domain/categories/entities/category.entity';
+import { randomUUID } from 'node:crypto';
+
+jest.mock('@domain/categories/entities/category.entity');
 
 describe('Product Repository', () => {
   let repository: ProductRepository;
+
+  const mockCategory = {
+    id: randomUUID().toString(),
+    name: 'fruits',
+    displayName: 'Fruits',
+    createdAt: new Date(),
+  } as Category;
 
   const productData = {
     name: 'Apple',
     description: 'Fruit Apple',
     price: 1.3,
+    categories: [mockCategory],
   };
 
   beforeEach(() => {
@@ -78,7 +90,7 @@ describe('Product Repository', () => {
     expect(spyUpdate).toHaveBeenCalledWith(product.id!, updateData);
   });
 
-  it('should return exception if not found product to delete', async () => {
+  it('should return exception if not found product to update', async () => {
     try {
       await repository.update('abc123', { price: 12.9 });
     } catch (error) {

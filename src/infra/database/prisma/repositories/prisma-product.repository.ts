@@ -2,17 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { Product } from '@domain/products/entities/product.entity';
 import { ProductRepository } from '@domain/products/repositories/product.repository';
 import { PrismaClient } from '@generated/prisma';
+import { Category } from '@domain/categories/entities/category.entity';
 
 @Injectable()
 export class PrismaProductRepository implements ProductRepository {
   constructor(private readonly prismaClient: PrismaClient) {}
 
   async findAll(): Promise<Product[]> {
-    const categories = await this.prismaClient.product.findMany();
+    const categories = await this.prismaClient.product.findMany({
+      include: {
+        categories: true,
+      },
+    });
     return categories.map((product) =>
       Product.create({
         ...product,
         price: product.price.toNumber(),
+        categories: product.categories.map((category) =>
+          Category.create(category),
+        ),
       }),
     );
   }
@@ -20,6 +28,7 @@ export class PrismaProductRepository implements ProductRepository {
   async findOneById(id: string): Promise<Product | undefined> {
     const product = await this.prismaClient.product.findUnique({
       where: { id },
+      include: { categories: true },
     });
 
     if (!product) return undefined;
@@ -27,6 +36,9 @@ export class PrismaProductRepository implements ProductRepository {
     return Product.create({
       ...product,
       price: product.price.toNumber(),
+      categories: product.categories.map((category) =>
+        Category.create(category),
+      ),
     });
   }
 
@@ -37,6 +49,11 @@ export class PrismaProductRepository implements ProductRepository {
         name: data.name,
         description: data.description,
         price: data.price,
+        categories: {
+          connect: [
+            ...data.categories.map((category) => ({ id: category.id! })),
+          ],
+        },
       },
     });
   }
