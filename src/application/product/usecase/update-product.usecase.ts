@@ -15,7 +15,6 @@ export class UpdateProductUseCase implements UseCase<UpdateData, void> {
     if (!product) {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
-
     await this.productRepository.update(id, { name, price, description });
   }
 }
