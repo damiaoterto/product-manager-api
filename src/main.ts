@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { OpenApiService } from '@infra/openapi/services/openapi.service';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,9 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
 
+  const openApiService = app.get(OpenApiService);
+
+  openApiService.init(app);
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
