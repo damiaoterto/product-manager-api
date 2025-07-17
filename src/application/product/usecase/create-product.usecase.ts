@@ -1,8 +1,8 @@
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UseCase } from '@shared/interfaces/usecase.interface';
 import { Product } from '@domain/products/entities/product.entity';
 import { ProductRepository } from '@domain/products/repositories/product.repository';
 import { CategoryRepository } from '@domain/categories/repositories/category.repository';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateProductDTO } from '../dto/create-product.dto';
 
 @Injectable()

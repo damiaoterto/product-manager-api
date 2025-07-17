@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { CreateProductUseCase } from './create-product.usecase';
 import { ProductRepository } from '@domain/products/repositories/product.repository';
 import { CategoryRepository } from '@domain/categories/repositories/category.repository';
 import { Product } from '@domain/products/entities/product.entity';
 import { Category } from '@domain/categories/entities/category.entity';
-import { CreateProductDTO } from '../dto/create-product.dto';
 import { randomUUID } from 'node:crypto';
+import { CreateProductUseCase } from './create-product.usecase';
+import { CreateProductDTO } from '../dto/create-product.dto';
 
 jest.mock('@domain/products/entities/product.entity');
 jest.mock('@domain/categories/entities/category.entity');
