@@ -4,6 +4,7 @@ import { CategoryController } from '@presentation/api/v1/controllers/category.co
 import { FindCategoryById } from '@application/category/usecases/find-category-by-id.usecase';
 import { GetAllCategoriesUseCase } from '@application/category/usecases/get-all-categories.usecase';
 import { UpdateCategoryUseCase } from '@application/category/usecases/update-category.usecase';
+import { DeleteCategoryUseCase } from '@application/category/usecases/delete-category.usecase';
 
 @Module({
   providers: [
@@ -11,6 +12,7 @@ import { UpdateCategoryUseCase } from '@application/category/usecases/update-cat
     FindCategoryById,
     GetAllCategoriesUseCase,
     UpdateCategoryUseCase,
+    DeleteCategoryUseCase,
   ],
   controllers: [CategoryController],
 })

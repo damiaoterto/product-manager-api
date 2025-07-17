@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { DeleteCategoryUseCase } from './delete-category.usecase';
 import { CategoryRepository } from '@domain/categories/repositories/category.repository';
 import { Category } from '@domain/categories/entities/category.entity';
+import { DeleteCategoryUseCase } from './delete-category.usecase';
 
 const mockCategoryRepository = {
   findOneById: jest.fn(),

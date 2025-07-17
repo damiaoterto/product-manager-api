@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -15,6 +16,7 @@ import { FindCategoryById } from '@application/category/usecases/find-category-b
 import { GetAllCategoriesUseCase } from '@application/category/usecases/get-all-categories.usecase';
 import { UpdateCategoryDTO } from '@application/category/dto/update-category.dto';
 import { UpdateCategoryUseCase } from '@application/category/usecases/update-category.usecase';
+import { DeleteCategoryUseCase } from '@application/category/usecases/delete-category.usecase';
 
 @Controller({ path: 'categories', version: '1' })
 export class CategoryController {
@@ -23,6 +25,7 @@ export class CategoryController {
     private readonly findCategoryById: FindCategoryById,
     private readonly getAllCategoryUseCase: GetAllCategoriesUseCase,
     private readonly updateCategoryUseCase: UpdateCategoryUseCase,
+    private readonly deleteCategoryUseCase: DeleteCategoryUseCase,
   ) {}
 
   @Post()
@@ -47,5 +50,10 @@ export class CategoryController {
     @Body() data: UpdateCategoryDTO,
   ) {
     return await this.updateCategoryUseCase.execute({ id, ...data });
+  }
+
+  @Delete(':id')
+  async DeleteCategory(@Param('id') id: string) {
+    return await this.deleteCategoryUseCase.execute(id);
   }
 }

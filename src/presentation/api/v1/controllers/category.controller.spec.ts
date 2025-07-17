@@ -5,6 +5,7 @@ import { CreateCategoryUseCase } from '@application/category/usecases/create-cat
 import { FindCategoryById } from '@application/category/usecases/find-category-by-id.usecase';
 import { GetAllCategoriesUseCase } from '@application/category/usecases/get-all-categories.usecase';
 import { UpdateCategoryUseCase } from '@application/category/usecases/update-category.usecase';
+import { DeleteCategoryUseCase } from '@application/category/usecases/delete-category.usecase';
 import { CreateCategoryDTO } from '@application/category/dto/create-category.dto';
 import { UpdateCategoryDTO } from '@application/category/dto/update-category.dto';
 import { Category } from '@domain/categories/entities/category.entity';
@@ -25,12 +26,17 @@ const mockUpdateCategoryUseCase = {
   execute: jest.fn(),
 };
 
+const mockDeleteCategoryUseCase = {
+  execute: jest.fn(),
+};
+
 describe('CategoryController', () => {
   let controller: CategoryController;
   let createUseCase: CreateCategoryUseCase;
   let findByIdUseCase: FindCategoryById;
   let getAllUseCase: GetAllCategoriesUseCase;
   let updateUseCase: UpdateCategoryUseCase;
+  let deleteUseCase: DeleteCategoryUseCase;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -52,6 +58,10 @@ describe('CategoryController', () => {
           provide: UpdateCategoryUseCase,
           useValue: mockUpdateCategoryUseCase,
         },
+        {
+          provide: DeleteCategoryUseCase,
+          useValue: mockDeleteCategoryUseCase,
+        },
       ],
     }).compile();
 
@@ -62,6 +72,7 @@ describe('CategoryController', () => {
       GetAllCategoriesUseCase,
     );
     updateUseCase = module.get<UpdateCategoryUseCase>(UpdateCategoryUseCase);
+    deleteUseCase = module.get<DeleteCategoryUseCase>(DeleteCategoryUseCase);
 
     jest.clearAllMocks();
   });
@@ -156,6 +167,32 @@ describe('CategoryController', () => {
         id: categoryId,
         ...updateDto,
       });
+    });
+  });
+
+  describe('DeleteCategory', () => {
+    it('should call the delete use case with the correct id', async () => {
+      const categoryId = 'uuid-to-delete';
+      mockDeleteCategoryUseCase.execute.mockResolvedValue(undefined);
+
+      await controller.DeleteCategory(categoryId);
+
+      expect(deleteUseCase.execute).toHaveBeenCalledWith(categoryId);
+    });
+
+    it('should propagate HttpException when category to delete is not found', async () => {
+      const categoryId = 'not-found-uuid';
+      const expectedError = new HttpException(
+        'Category not found',
+        HttpStatus.NOT_FOUND,
+      );
+      mockDeleteCategoryUseCase.execute.mockRejectedValue(expectedError);
+
+      await expect(controller.DeleteCategory(categoryId)).rejects.toThrow(
+        expectedError,
+      );
+
+      expect(deleteUseCase.execute).toHaveBeenCalledWith(categoryId);
     });
   });
 });
