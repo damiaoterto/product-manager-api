@@ -27,7 +27,7 @@ Para executar a aplicação localmente utilizando Docker, siga os passos abaixo.
     No diretório raiz do projeto, execute o seguinte comando para construir e iniciar os containers da aplicação, banco de dados e cache:
 
     ```bash
-    docker-compose up -d
+    docker-compose --env-file .env up -d --build
     ```
 
     Este comando irá:
